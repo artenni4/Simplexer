@@ -39,9 +39,57 @@ const std::string Lexer::getSymbolLine() const {
     return res.str();
 }
 
+const Token Lexer::parseSymbol() const
+{
+    Token tk;
+    tk.type = TokenType::SYMBOL;
+    // fill in string for token
+    while (std::isalpha(*m_pos) || std::isdigit(*m_pos)) {
+        tk.symbol += *m_pos++;
+    }
+    
+    return tk;
+}
+
+const Token Lexer::parseNumber() const
+{
+    Token tk;
+    // get all digits and skip if point is on the first place
+    while (std::isdigit(*m_pos)) {
+        tk.symbol += *m_pos++;
+    }
+
+    // check for point after previous loop
+    if (*m_pos == '.') { // add point to symbol string and define type as RATIONAL
+        tk.symbol += *m_pos++;
+        while (std::isdigit(*m_pos)) {
+            tk.symbol += *m_pos++;
+        }
+        tk.type = TokenType::RATIONAL;
+    }
+    else { // if there is no point then type is INTEGER
+        tk.type = TokenType::INTEGER;
+    }
+
+    return tk;
+}
+
+const Token Lexer::parseString() const
+{
+    Token tk;
+    tk.type = TokenType::STRING;
+    // remember starting quote and fill string to same quote
+    char quote = *m_pos++;
+    while (*m_pos != quote) {
+        // TODO: handle this -> \ in strings
+        tk.symbol += *m_pos++;
+    }
+    m_pos++; // skip the ending quote
+    return tk;
+}
+
 const Token Lexer::next() const {
     Token tk;
-    std::string symbol;
 
     // skip spaces
     while (std::isspace(*m_pos)) { ++m_pos; }
@@ -50,46 +98,13 @@ const Token Lexer::next() const {
     tk.line = getSymbolLine();
 
     if (std::isalpha(*m_pos)) { // symbol
-        tk.type = TokenType::SYMBOL;
-
-        // fill in string for token
-        while (std::isalpha(*m_pos) || std::isdigit(*m_pos)) {
-            symbol += *m_pos++;
-        }
-        tk.symbol = std::move(symbol);
+        tk = parseSymbol();
     }
     else if (*m_pos == '\'' || *m_pos == '"') { // string
-        tk.type = TokenType::STRING;
-
-        // remember starting quote and fill string to same quote
-        char quote = *m_pos++;
-        while (*m_pos != quote) {
-            // TODO: handle this -> \ in strings
-            symbol += *m_pos++;
-        }
-        m_pos++; // skip the ending quote
-
-        tk.symbol = std::move(symbol);
+        tk = parseString();
     }
     else if (std::isdigit(*m_pos) || *m_pos == '.') { // integer or rational
-        // get all digits and skip if point is on the first place
-        while (std::isdigit(*m_pos)) {
-            symbol += *m_pos++;
-        }
-
-        // check for point after previous loop
-        if (*m_pos == '.') { // add point to symbol string and define type as RATIONAL
-            symbol += *m_pos++;
-            while (std::isdigit(*m_pos)) {
-                symbol += *m_pos++;
-            }
-            tk.type = TokenType::RATIONAL;
-            tk.symbol = std::move(symbol);
-        }
-        else { // if there is no point then type is INTEGER
-            tk.type = TokenType::INTEGER;
-            tk.symbol = std::move(symbol);
-        }
+        tk = parseNumber();
     }
     else if (*m_pos == '\0') {
         tk.type = TokenType::END_OF_FILE;

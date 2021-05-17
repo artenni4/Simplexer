@@ -15,6 +15,23 @@ enum class TokenType {
     STRING,
     // == end of data types ==
     SYMBOL, // language symbol
+    // ===== operators =======
+    PLUS,
+    MINUS,
+    ASTERISK,
+    SLASH,
+    COMMA,
+    // === end of operators ==
+    // ===== separators ======
+    SEMICOLON,
+    COLON,
+    LEFT_PARAN,
+    RIGHT_PARAN,
+    LEFT_SQUARE,
+    RIGHT_SQUARE,
+    LEFT_CURLY,
+    RIGHT_CURLY,
+    // === end of separatos ==
 };
 
 const static char* PRINTABLE_TYPES[] = {
@@ -23,7 +40,20 @@ const static char* PRINTABLE_TYPES[] = {
     "INTEGER",
     "RATIONAL",
     "STRING",
-    "SYMBOL"
+    "SYMBOL",
+    "PLUS",
+    "MINUS",
+    "ASTERISK",
+    "SLASH",
+    "COMMA",
+    "SEMICOLON",
+    "COLON",
+    "LEFT_PARAN",
+    "RIGHT_PARAN",
+    "LEFT_SQUARE",
+    "RIGHT_SQUARE",
+    "LEFT_CURLY",
+    "RIGHT_CURLY",
 };
 
 struct Token {
@@ -34,13 +64,20 @@ struct Token {
 
 class Lexer {
 private:
-    std::string m_rawString;
-    mutable std::string::const_iterator m_pos;
+    std::string m_rawString; // string to analyze
+    mutable std::string::const_iterator m_pos; // current lexer position in string
 
 private:
 
     // return string with symbol's line and row
     const std::string getSymbolLine() const;
+
+    // get Token with type SYMBOL from current position
+    const Token parseSymbol() const;
+    // get Token with type INTEGER or RATIONAL from current position
+    const Token parseNumber() const;
+    // get Token with type STRING from current position
+    const Token parseString() const;
 
 public:
     Lexer() { m_pos = m_rawString.begin();  }
