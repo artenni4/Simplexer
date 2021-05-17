@@ -7,7 +7,7 @@ int main(int argc, char** argv) {
     Lexer lex;
     lex.readFile(fileName);
 
-    for (auto t = lex.next(); t.type != TokenType::ENDOFFILE; t = lex.next()) {
+    for (auto t = lex.next(); t.type != TokenType::END_OF_FILE; t = lex.next()) {
         std::cout << "Type: " << PRINTABLE_TYPES[static_cast<int>(t.type)] << " Symbol: " << t.symbol << " Line: " << t.line << std::endl;
     }
 
