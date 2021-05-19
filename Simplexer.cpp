@@ -121,6 +121,15 @@ const Token Lexer::next() const {
         case '-': tk.type = TokenType::MINUS; break;
         case '*': tk.type = TokenType::ASTERISK; break;
         case '/': tk.type = TokenType::SLASH; break;
+        case ',': tk.type = TokenType::COMMA; break;
+        case ';': tk.type = TokenType::SEMICOLON; break;
+        case ':': tk.type = TokenType::COLON; break;
+        case '(': tk.type = TokenType::LEFT_PARAN; break;
+        case ')': tk.type = TokenType::RIGHT_PARAN; break;
+        case '[': tk.type = TokenType::LEFT_SQUARE; break;
+        case ']': tk.type = TokenType::RIGHT_SQUARE; break;
+        case '{': tk.type = TokenType::LEFT_CURLY; break;
+        case '}': tk.type = TokenType::RIGHT_CURLY; break;
         // TODO: other cases
         default:
             tk.type = TokenType::INVALID;
