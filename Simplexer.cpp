@@ -85,7 +85,7 @@ const Token Lexer::parseString(Token& tk) const {
     return tk;
 }
 
-Token Lexer::next() const {
+const Token Lexer::next() const {
     Token tk;
 
     // skip spaces

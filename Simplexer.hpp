@@ -92,5 +92,5 @@ public:
     void setString(std::string_view string) { m_rawString = string; m_pos = m_rawString.begin(); }
 
     // return Token structure from current index
-    Token next() const;
+    const Token next() const;
 };
