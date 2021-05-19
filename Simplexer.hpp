@@ -2,7 +2,6 @@
 
 #include <string>
 #include <sstream>
-#include <iostream>
 #include <fstream>
 #include <cctype>
 
@@ -86,7 +85,7 @@ public:
     Lexer(std::string_view string) : m_rawString(string) { m_pos = m_rawString.begin(); }
 
     // read file content
-    void readFile(std::string_view fileName);
+    bool readFile(std::string_view fileName);
     
     // set lexer string
     void setString(std::string_view string) { m_rawString = string; m_pos = m_rawString.begin(); }

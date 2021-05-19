@@ -1,11 +1,9 @@
 #include "Simplexer.hpp"
 
-void Lexer::readFile(std::string_view fileName) {
+bool Lexer::readFile(std::string_view fileName) {
     std::ifstream fin(fileName.data());
 
     if (fin) {
-        std::cout << "File " << fileName << " opened" << std::endl;
-
         // get all content of a file
         fin.unsetf(std::ios::skipws); // should include newlines
         m_rawString.assign(std::istream_iterator<char>(fin), std::istream_iterator<char>());
@@ -14,11 +12,11 @@ void Lexer::readFile(std::string_view fileName) {
         // reset string index
         m_pos = m_rawString.begin();
 
-        std::cout << "File content was read" << std::endl;
         fin.close();
+        return true;
     }
     else {
-        std::cerr << "Failed to open file " << fileName << std::endl;
+        return false;
     }
 }
 
