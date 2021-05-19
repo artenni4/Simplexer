@@ -6,9 +6,13 @@
 #include <cctype>
 #include <iterator>
 
+
+// typedef not implemented ni
+
 enum class TokenType {
     END_OF_FILE, // always in the end, controls flow
     INVALID, // set if lexer did not recognize symbol
+    COMMENT, //ni
     // ===== data types ======
     INTEGER,
     RATIONAL,
@@ -17,9 +21,21 @@ enum class TokenType {
     SYMBOL, // language symbol
     // ===== operators =======
     PLUS,
+    PLUS_PLUS, // ni
+    PLUS_EQUAL, // ni
     MINUS,
+    MINUS_MINUS, // ni
+    MINUS_EQUAL, // ni
     ASTERISK,
+    ASTERISK_EQUAL, // ni
     SLASH,
+    SLASH_EQUAL, // ni
+    EQUAL, // ni
+    DOUBLE_EQUAL, // ni
+    LESS_THAN, // ni
+    LESS_OR_EQUAL, // ni
+    GREATER_THAN, //ni
+    GREATER_OR_EQUAL, // ni
     // === end of operators ==
     // ===== separators ======
     COMMA,
@@ -38,14 +54,27 @@ enum class TokenType {
 const static char* PRINTABLE_TYPES[] = {
     "END_OF_FILE",
     "INVALID",
+    "COMMENT",
     "INTEGER",
     "RATIONAL",
     "STRING",
     "SYMBOL",
     "PLUS",
+    "PLUS_PLUS",
+    "PLUS_EQUAL",
     "MINUS",
+    "MINUS_MINUS",
+    "MINUS_EQUAL",
     "ASTERISK",
+    "ASTERISK_EQUAL",
     "SLASH",
+    "SLASH_EQUAL",
+    "EQUAL",
+    "DOUBLE_EQUAL",
+    "LESS_THAN",
+    "LESS_OR_EQUAL",
+    "GREATER_THAN",
+    "GREATER_OR_EQUAL",
     "COMMA",
     "POINT",
     "SEMICOLON",
@@ -75,11 +104,13 @@ private:
     const std::string getSymbolLine() const;
 
     // get symbol from current position
-    const Token parseSymbol(Token& tk) const;
+    void parseSymbol(Token& tk) const;
     // get number from current position
-    const Token parseNumber(Token& tk) const;
+    void parseNumber(Token& tk) const;
     // get string from current position
-    const Token parseString( Token& tk) const;
+    void parseString(Token& tk) const;
+    // processes all signs, use to get any combination for token type
+    void parseSign(Token& tk) const;
 
 public:
     Lexer() { m_pos = m_rawString.begin();  }

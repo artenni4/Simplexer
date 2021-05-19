@@ -37,7 +37,7 @@ const std::string Lexer::getSymbolLine() const {
     return res.str();
 }
 
-const Token Lexer::parseSymbol(Token& tk) const
+void Lexer::parseSymbol(Token& tk) const
 {
     tk.type = TokenType::SYMBOL;
     // fill in string for token
@@ -45,11 +45,9 @@ const Token Lexer::parseSymbol(Token& tk) const
         tk.symbol += *m_pos++;
     }
     --m_pos; // return to the last character
-    
-    return tk;
 }
 
-const Token Lexer::parseNumber(Token& tk) const
+void Lexer::parseNumber(Token& tk) const
 {
     // get all digits and skip if point is on the first place
     while (std::isdigit(*m_pos)) {
@@ -68,11 +66,9 @@ const Token Lexer::parseNumber(Token& tk) const
         tk.type = TokenType::INTEGER;
     }
     --m_pos; // return to the last character
-
-    return tk;
 }
 
-const Token Lexer::parseString(Token& tk) const {
+void Lexer::parseString(Token& tk) const {
     tk.type = TokenType::STRING;
     // remember starting quote and fill string to same quote
     char quote = *m_pos++;
@@ -82,7 +78,56 @@ const Token Lexer::parseString(Token& tk) const {
     }
     // do not skip ending quote like this m_pos++; 
     // because parse functions should stop on last character
-    return tk;
+}
+
+void Lexer::parseSign(Token& tk) const {
+    auto next = m_pos + 1;
+    switch (*m_pos) {
+    case '+':
+        if (*next == '+') {
+            tk.type = TokenType::PLUS_PLUS;
+            ++m_pos;
+        }
+        else if (*next == '=') {
+            tk.type = TokenType::PLUS_EQUAL;
+            ++m_pos;
+        }
+        else {
+            tk.type = TokenType::PLUS;
+        }
+        break;
+    case '-':
+        if (*next == '-') {
+            tk.type = TokenType::MINUS_MINUS;
+            ++m_pos;
+        }
+        else if (*next == '=') {
+            tk.type = TokenType::MINUS_EQUAL;
+            ++m_pos;
+        }
+        else {
+            tk.type = TokenType::MINUS;
+        }
+        break;
+    case '*':
+        if (*next == '=') {
+            tk.type = TokenType::ASTERISK_EQUAL;
+            ++m_pos;
+        }
+        else {
+            tk.type = TokenType::ASTERISK;
+        }
+        break;
+    case '/':
+        if (*next == '=') {
+            tk.type = TokenType::SLASH_EQUAL;
+            ++m_pos;
+        }
+        else {
+            tk.type = TokenType::SLASH;
+        }
+        break;
+    }
 }
 
 const Token Lexer::next() const {
@@ -116,10 +161,12 @@ const Token Lexer::next() const {
     }
     else {
         switch (*m_pos) {
-        case '+': tk.type = TokenType::PLUS; break;
-        case '-': tk.type = TokenType::MINUS; break;
-        case '*': tk.type = TokenType::ASTERISK; break;
-        case '/': tk.type = TokenType::SLASH; break;
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+            parseSign(tk);
+            break;
         case ',': tk.type = TokenType::COMMA; break;
         case ';': tk.type = TokenType::SEMICOLON; break;
         case ':': tk.type = TokenType::COLON; break;
