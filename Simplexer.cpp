@@ -47,6 +47,7 @@ const Token Lexer::parseSymbol() const
     while (std::isalpha(*m_pos) || std::isdigit(*m_pos)) {
         tk.symbol += *m_pos++;
     }
+    --m_pos; // return to the last character
     
     return tk;
 }
@@ -70,6 +71,7 @@ const Token Lexer::parseNumber() const
     else { // if there is no point then type is INTEGER
         tk.type = TokenType::INTEGER;
     }
+    --m_pos; // return to the last character
 
     return tk;
 }
@@ -84,7 +86,8 @@ const Token Lexer::parseString() const
         // TODO: handle this -> \ in strings
         tk.symbol += *m_pos++;
     }
-    m_pos++; // skip the ending quote
+    // do not skip ending quote like this m_pos++; 
+    // because parse functions should stop on last character
     return tk;
 }
 
@@ -94,24 +97,45 @@ const Token Lexer::next() const {
     // skip spaces
     while (std::isspace(*m_pos)) { ++m_pos; }
 
-    // set symbol line
-    tk.line = getSymbolLine();
-
     if (std::isalpha(*m_pos)) { // symbol
         tk = parseSymbol();
     }
     else if (*m_pos == '\'' || *m_pos == '"') { // string
         tk = parseString();
     }
-    else if (std::isdigit(*m_pos) || *m_pos == '.') { // integer or rational
+    else if (std::isdigit(*m_pos)) { // integer or rational
+        // TODO: point can be not only RATIONAL but also as a separate symbol,
+        // so distinguish between those
         tk = parseNumber();
+    }
+    else if (*m_pos == '.') {
+        if (isdigit(*(m_pos + 1))) { // if char after current position is a digit
+            tk = parseNumber(); // parse number
+        }
+        else { // else assume as a standalone point
+            tk.type = TokenType::POINT;
+        }
     }
     else if (*m_pos == '\0') {
         tk.type = TokenType::END_OF_FILE;
     }
     else {
-        tk.type = TokenType::INVALID;
+        switch (*m_pos) {
+        case '+': tk.type = TokenType::PLUS; break;
+        case '-': tk.type = TokenType::MINUS; break;
+        case '*': tk.type = TokenType::ASTERISK; break;
+        case '/': tk.type = TokenType::SLASH; break;
+        // TODO: other cases
+        default:
+            tk.type = TokenType::INVALID;
+        }
     }
+
+    // so as any parsing stops on last character
+    ++m_pos; // move pointer forward
+    
+    // set symbol line
+    tk.line = getSymbolLine();
 
     return tk;
 }

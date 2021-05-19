@@ -20,9 +20,10 @@ enum class TokenType {
     MINUS,
     ASTERISK,
     SLASH,
-    COMMA,
     // === end of operators ==
     // ===== separators ======
+    COMMA,
+    POINT,
     SEMICOLON,
     COLON,
     LEFT_PARAN,
@@ -46,6 +47,7 @@ const static char* PRINTABLE_TYPES[] = {
     "ASTERISK",
     "SLASH",
     "COMMA",
+    "POINT",
     "SEMICOLON",
     "COLON",
     "LEFT_PARAN",
@@ -72,11 +74,11 @@ private:
     // return string with symbol's line and row
     const std::string getSymbolLine() const;
 
-    // get Token with type SYMBOL from current position
+    // get symbol from current position
     const Token parseSymbol() const;
-    // get Token with type INTEGER or RATIONAL from current position
+    // get number from current position
     const Token parseNumber() const;
-    // get Token with type STRING from current position
+    // get string from current position
     const Token parseString() const;
 
 public:
