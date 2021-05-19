@@ -110,7 +110,9 @@ private:
     // get string from current position
     void parseString(Token& tk) const;
     // processes all signs, use to get any combination for token type
-    void parseSign(Token& tk) const;
+    void parseOperator(Token& tk) const;
+    // get comment token
+    void parseComment(Token& tk) const;
 
 public:
     Lexer() { m_pos = m_rawString.begin();  }

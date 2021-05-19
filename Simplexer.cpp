@@ -80,7 +80,7 @@ void Lexer::parseString(Token& tk) const {
     // because parse functions should stop on last character
 }
 
-void Lexer::parseSign(Token& tk) const {
+void Lexer::parseOperator(Token& tk) const {
     auto next = m_pos + 1;
     switch (*m_pos) {
     case '+':
@@ -130,6 +130,20 @@ void Lexer::parseSign(Token& tk) const {
     }
 }
 
+void Lexer::parseComment(Token& tk) const {
+    if (*m_pos == '/' && *(m_pos + 1) == '/') {
+        tk.type = TokenType::COMMENT;
+        m_pos += 2; // skip these two slashes
+        while (*m_pos != '\n' && *m_pos != '\0') {
+            tk.symbol += *m_pos++;
+        }
+        --m_pos;
+    }
+    else { // ill-formed call to function
+        tk.type = TokenType::INVALID;
+    }
+}
+
 const Token Lexer::next() const {
     Token tk;
 
@@ -161,11 +175,16 @@ const Token Lexer::next() const {
     }
     else {
         switch (*m_pos) {
-        case '+':
+        case '/': // can be a comment
+            if (*(m_pos + 1) == '/') { // handle as a comment
+                parseComment(tk);
+                break;
+            }
+            [[fallthrough]]; // fall below if not a comment
         case '-':
         case '*':
-        case '/':
-            parseSign(tk);
+        case '+':
+            parseOperator(tk);
             break;
         case ',': tk.type = TokenType::COMMA; break;
         case ';': tk.type = TokenType::SEMICOLON; break;
