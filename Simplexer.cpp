@@ -104,8 +104,6 @@ const Token Lexer::next() const {
         tk = parseString();
     }
     else if (std::isdigit(*m_pos)) { // integer or rational
-        // TODO: point can be not only RATIONAL but also as a separate symbol,
-        // so distinguish between those
         tk = parseNumber();
     }
     else if (*m_pos == '.') {
