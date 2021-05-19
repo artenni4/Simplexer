@@ -4,6 +4,7 @@
 #include <sstream>
 #include <fstream>
 #include <cctype>
+#include <iterator>
 
 enum class TokenType {
     END_OF_FILE, // always in the end, controls flow
@@ -74,11 +75,11 @@ private:
     const std::string getSymbolLine() const;
 
     // get symbol from current position
-    const Token parseSymbol() const;
+    const Token parseSymbol(Token& tk) const;
     // get number from current position
-    const Token parseNumber() const;
+    const Token parseNumber(Token& tk) const;
     // get string from current position
-    const Token parseString() const;
+    const Token parseString( Token& tk) const;
 
 public:
     Lexer() { m_pos = m_rawString.begin();  }
@@ -90,6 +91,6 @@ public:
     // set lexer string
     void setString(std::string_view string) { m_rawString = string; m_pos = m_rawString.begin(); }
 
-    // return Token structure from curr index
-    const Token next() const;
+    // return Token structure from current index
+    Token next() const;
 };

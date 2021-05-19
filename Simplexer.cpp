@@ -37,9 +37,8 @@ const std::string Lexer::getSymbolLine() const {
     return res.str();
 }
 
-const Token Lexer::parseSymbol() const
+const Token Lexer::parseSymbol(Token& tk) const
 {
-    Token tk;
     tk.type = TokenType::SYMBOL;
     // fill in string for token
     while (std::isalpha(*m_pos) || std::isdigit(*m_pos)) {
@@ -50,9 +49,8 @@ const Token Lexer::parseSymbol() const
     return tk;
 }
 
-const Token Lexer::parseNumber() const
+const Token Lexer::parseNumber(Token& tk) const
 {
-    Token tk;
     // get all digits and skip if point is on the first place
     while (std::isdigit(*m_pos)) {
         tk.symbol += *m_pos++;
@@ -74,9 +72,7 @@ const Token Lexer::parseNumber() const
     return tk;
 }
 
-const Token Lexer::parseString() const
-{
-    Token tk;
+const Token Lexer::parseString(Token& tk) const {
     tk.type = TokenType::STRING;
     // remember starting quote and fill string to same quote
     char quote = *m_pos++;
@@ -89,24 +85,27 @@ const Token Lexer::parseString() const
     return tk;
 }
 
-const Token Lexer::next() const {
+Token Lexer::next() const {
     Token tk;
 
     // skip spaces
     while (std::isspace(*m_pos)) { ++m_pos; }
 
+    // set symbol line
+    tk.line = getSymbolLine();
+
     if (std::isalpha(*m_pos)) { // symbol
-        tk = parseSymbol();
+        parseSymbol(tk);
     }
     else if (*m_pos == '\'' || *m_pos == '"') { // string
-        tk = parseString();
+        parseString(tk);
     }
     else if (std::isdigit(*m_pos)) { // integer or rational
-        tk = parseNumber();
+        parseNumber(tk);
     }
     else if (*m_pos == '.') {
         if (isdigit(*(m_pos + 1))) { // if char after current position is a digit
-            tk = parseNumber(); // parse number
+            parseNumber(tk); // parse number
         }
         else { // else assume as a standalone point
             tk.type = TokenType::POINT;
@@ -136,11 +135,8 @@ const Token Lexer::next() const {
         }
     }
 
-    // so as any parsing stops on last character
+    // as far as any parsing process stops on last character
     ++m_pos; // move pointer forward
-    
-    // set symbol line
-    tk.line = getSymbolLine();
 
     return tk;
 }
