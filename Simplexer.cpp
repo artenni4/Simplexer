@@ -89,6 +89,7 @@ void Lexer::parseString(Token& tk) const {
     // so go back for one position
     if (*m_pos == '\0') {
         --m_pos;
+        tk.type = TokenType::INVALID;
     }
 }
 
