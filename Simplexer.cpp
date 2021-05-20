@@ -1,5 +1,10 @@
 #include "Simplexer.hpp"
 
+void Lexer::setString(std::string_view string) {
+    m_rawString = string; 
+    m_pos = m_rawString.begin();
+}
+
 bool Lexer::readFile(std::string_view fileName) {
     std::ifstream fin(fileName.data());
 
@@ -88,7 +93,7 @@ void Lexer::parseString(Token& tk) const {
 }
 
 void Lexer::parseOperator(Token& tk) const {
-    auto next = m_pos + 1;
+    auto next = m_pos + 1; // store next character after current position
     switch (*m_pos) {
     case '+':
         if (*next == '+') {

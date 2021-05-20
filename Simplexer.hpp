@@ -122,7 +122,7 @@ public:
     bool readFile(std::string_view fileName);
     
     // set lexer string
-    void setString(std::string_view string) { m_rawString = string; m_pos = m_rawString.begin(); }
+    void setString(std::string_view string);
 
     // return Token structure from current index
     const Token next() const;
