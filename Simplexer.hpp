@@ -21,15 +21,15 @@ enum class TokenType {
     SYMBOL, // language symbol
     // ===== operators =======
     PLUS,
-    PLUS_PLUS, // ni
-    PLUS_EQUAL, // ni
+    PLUS_PLUS,
+    PLUS_EQUAL,
     MINUS,
-    MINUS_MINUS, // ni
-    MINUS_EQUAL, // ni
+    MINUS_MINUS,
+    MINUS_EQUAL,
     ASTERISK,
-    ASTERISK_EQUAL, // ni
+    ASTERISK_EQUAL,
     SLASH,
-    SLASH_EQUAL, // ni
+    SLASH_EQUAL,
     EQUAL, // ni
     DOUBLE_EQUAL, // ni
     LESS_THAN, // ni
