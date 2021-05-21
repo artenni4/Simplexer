@@ -38,17 +38,17 @@ Line: (6,13)    Type: RIGHT_PARAN   Symbol:
 Line: (6,14)    Type: SEMICOLON     Symbol:
 Line: (6,16)    Type: COMMENT       Symbol:  print some text
 Line: (7,1)     Type: SYMBOL        Symbol: a
-Line: (7,3)     Type: INVALID       Symbol:
+Line: (7,3)     Type: EQUAL         Symbol:
 Line: (7,5)     Type: INTEGER       Symbol: 56
 Line: (7,7)     Type: SEMICOLON     Symbol:
 Line: (8,1)     Type: SYMBOL        Symbol: b
-Line: (8,3)     Type: INVALID       Symbol:
+Line: (8,3)     Type: EQUAL         Symbol:
 Line: (8,5)     Type: SYMBOL        Symbol: a
 Line: (8,7)     Type: MINUS         Symbol:
 Line: (8,9)     Type: INTEGER       Symbol: 20
 Line: (8,11)    Type: SEMICOLON     Symbol:
 Line: (9,1)     Type: SYMBOL        Symbol: res
-Line: (9,5)     Type: INVALID       Symbol:
+Line: (9,5)     Type: EQUAL         Symbol:
 Line: (9,7)     Type: SYMBOL        Symbol: add
 Line: (9,10)    Type: LEFT_PARAN    Symbol:
 Line: (9,11)    Type: SYMBOL        Symbol: a
