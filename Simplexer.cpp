@@ -147,7 +147,35 @@ void Lexer::parseOperator(Token& tk) const {
             tk.type = TokenType::SLASH;
         }
         break;
+    case '=':
+        if (*next == '=') {
+            tk.type = TokenType::DOUBLE_EQUAL;
+            ++m_pos;
+        }
+        else {
+            tk.type = TokenType::EQUAL;
+        }
+        break;
+    case '<':
+        if (*next == '=') {
+            tk.type = TokenType::LESS_OR_EQUAL;
+            ++m_pos;
+        }
+        else {
+            tk.type = TokenType::LESS_THAN;
+        }
+        break;
+    case '>':
+        if (*next == '=') {
+            tk.type = TokenType::GREATER_OR_EQUAL;
+            ++m_pos;
+        }
+        else {
+            tk.type = TokenType::GREATER_THAN;
+        }
+        break;
     }
+    
 }
 
 void Lexer::parseComment(Token& tk) const {
@@ -204,6 +232,9 @@ const Token Lexer::next() const {
         case '-':
         case '*':
         case '+':
+        case '=':
+        case '<':
+        case '>':
             parseOperator(tk);
             break;
         case ',': tk.type = TokenType::COMMA; break;

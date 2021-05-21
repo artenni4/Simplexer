@@ -7,12 +7,10 @@
 #include <iterator>
 
 
-// typedef not implemented ni
-
 enum class TokenType {
     END_OF_FILE, // always in the end, controls flow
     INVALID, // set if lexer did not recognize symbol
-    COMMENT, //ni
+    COMMENT,
     // ===== data types ======
     INTEGER,
     RATIONAL,
@@ -30,12 +28,12 @@ enum class TokenType {
     ASTERISK_EQUAL,
     SLASH,
     SLASH_EQUAL,
-    EQUAL, // ni
-    DOUBLE_EQUAL, // ni
-    LESS_THAN, // ni
-    LESS_OR_EQUAL, // ni
-    GREATER_THAN, //ni
-    GREATER_OR_EQUAL, // ni
+    EQUAL,
+    DOUBLE_EQUAL,
+    LESS_THAN,
+    LESS_OR_EQUAL,
+    GREATER_THAN,
+    GREATER_OR_EQUAL,
     // === end of operators ==
     // ===== separators ======
     COMMA,
