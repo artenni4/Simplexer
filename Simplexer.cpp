@@ -77,19 +77,26 @@ void Lexer::parseString(Token& tk) const {
     tk.type = TokenType::STRING;
     // remember starting quote and fill string to same quote
     char quote = *m_pos++;
-    while (*m_pos != quote && *m_pos != '\0') { // loop until encounted same quote or end of file
-        // TODO: handle this -> \ in strings
-        tk.symbol += *m_pos++;
-    }
-    // do not skip ending quote like this m_pos++; 
-    // because parse functions should stop on last character
 
-    // if current position is end of file
-    // this means that we have overhead of the string on one charcter
-    // so go back for one position
-    if (*m_pos == '\0') {
-        --m_pos;
-        tk.type = TokenType::INVALID;
+    while (true) {
+        // TODO: handle this -> \ in strings
+        if (*m_pos == quote) {
+            break;
+        }
+        else if (*m_pos == '\n' || *m_pos == '\0') {
+            // do not skip ending quote 
+            // because parse functions should stop on last character
+            --m_pos;
+
+            // if current position is end of file or new line
+            // this means that we have overhead of the string on one charcter
+            // so go back for one position
+            tk.type = TokenType::INVALID;
+            break;
+        }
+        else {
+            tk.symbol += *m_pos++;
+        }
     }
 }
 
@@ -214,8 +221,11 @@ const Token Lexer::next() const {
         }
     }
 
-    // as far as any parsing process stops on last character
-    ++m_pos; // move pointer forward
+    // always return EOF when m_pos is on the last character
+    if (tk.type != TokenType::END_OF_FILE) {
+        // as far as any parsing process stops on last character
+        ++m_pos; // move pointer forward
+    }
 
     return tk;
 }

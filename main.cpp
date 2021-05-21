@@ -26,7 +26,7 @@ void printTokens(const std::vector<Token> ts) {
 }
 
 int main(int argc, char** argv) {
-    
+
     const char* fileName = "test.txt";
     Lexer lex;
     if (!lex.readFile(fileName)) {
@@ -36,13 +36,19 @@ int main(int argc, char** argv) {
     else {
         std::cout << "File " << fileName << " was successfuly read" << std::endl;
     }
-    
+
+    bool err = false;
     std::vector<Token> ts;
     for (Token t = lex.next(); t.type != TokenType::END_OF_FILE; t = lex.next()) {
         ts.push_back(t);
+        if (t.type == TokenType::INVALID) err = true;
     }
 
     printTokens(ts);
+
+    if (err) {
+        std::cout << "\n\nSome errors occured during analysis" << std::endl;
+    }
 
     return 0;
 }
