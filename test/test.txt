@@ -1,0 +1,9 @@
+// this function adds to numbers
+function add(a, b) {
+	return a + b;
+}
+
+print("adfb"); // print some text
+a = 56;
+b = a - 20;
+res = add(a, b);

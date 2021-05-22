@@ -82,7 +82,6 @@ namespace Simplexer {
         char quote = *m_pos++;
 
         while (true) {
-            // TODO: handle this -> \ in strings
             if (*m_pos == quote) {
                 break;
             }
@@ -96,6 +95,16 @@ namespace Simplexer {
                 // so go back for one position
                 tk.type = TokenType::INVALID;
                 break;
+            }
+            else if (*m_pos == '\\') { // if encounter backslash
+                if (*(m_pos + 1) == quote) { // and next char is quote parseString started with
+                    // then swallow this quote
+                    tk.symbol += *++m_pos;
+                    ++m_pos; // skip the quote
+                }
+                else {
+                    tk.symbol += *m_pos++;
+                }
             }
             else {
                 tk.symbol += *m_pos++;

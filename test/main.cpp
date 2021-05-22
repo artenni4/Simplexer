@@ -78,6 +78,11 @@ void typeAndSymbolsTest() {
     CHECK_EQUAL(t.type, Simplexer::TokenType::STRING, "string type");
     CHECK_EQUAL(t.symbol, "hello", "string symbol");
 
+    lex.setString("'abc \\' def\\g'");
+    t = lex.next();
+    CHECK_EQUAL(t.type, Simplexer::TokenType::STRING, "string with back slash");
+    CHECK_EQUAL(t.symbol, "abc ' def\\g", "string with back slash symbol");
+
     lex.setString("12.355");
     t = lex.next();
     CHECK_EQUAL(t.type, Simplexer::TokenType::RATIONAL, "rational type");
