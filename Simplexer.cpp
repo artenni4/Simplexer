@@ -5,6 +5,7 @@ namespace Simplexer {
     void Lexer::setString(std::string_view string) {
         m_rawString = string;
         m_pos = m_rawString.begin();
+        m_rawString += '\0';
     }
 
     bool Lexer::readFile(std::string_view fileName) {
