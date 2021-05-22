@@ -54,7 +54,6 @@ namespace Simplexer {
         "END_OF_FILE",
         "INVALID",
         "COMMENT",
-        "HASH",
         "INTEGER",
         "RATIONAL",
         "STRING",
