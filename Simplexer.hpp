@@ -8,6 +8,7 @@
 
 namespace Simplexer {
 
+    // All possible token types
     enum class TokenType {
         END_OF_FILE, // always in the end, controls flow
         INVALID, // set if lexer did not recognize symbol
@@ -50,6 +51,8 @@ namespace Simplexer {
         // === end of separatos ==
     };
 
+    // use for printing enum values
+    // by passing enum's value as index to the array
     const static char* PRINTABLE_TYPES[] = {
         "END_OF_FILE",
         "INVALID",
@@ -86,12 +89,15 @@ namespace Simplexer {
         "RIGHT_CURLY",
     };
 
+    // Token class
+    // Holds everything needed for token
     struct Token {
         TokenType type = TokenType::INVALID;
         std::string line;
         std::string symbol;
     };
 
+    // Class that represents lexical analyzer
     class Lexer {
     private:
         std::string m_rawString; // string to analyze
@@ -103,25 +109,25 @@ namespace Simplexer {
         const std::string getSymbolLine() const;
 
         // get symbol from current position
-        void parseSymbol(Token& tk) const;
+        void parseSymbol(Token&) const;
         // get number from current position
-        void parseNumber(Token& tk) const;
+        void parseNumber(Token&) const;
         // get string from current position
-        void parseString(Token& tk) const;
+        void parseString(Token&) const;
         // processes all signs, use to get any combination for token type
-        void parseOperator(Token& tk) const;
+        void parseOperator(Token&) const;
         // get comment token
-        void parseComment(Token& tk) const;
+        void parseComment(Token&) const;
 
     public:
-        Lexer() { m_pos = m_rawString.begin(); }
-        Lexer(std::string_view string) : m_rawString(string) { m_pos = m_rawString.begin(); }
+        Lexer();
+        Lexer(std::string_view);
 
         // read file content
-        bool readFile(std::string_view fileName);
+        bool readFile(std::string_view);
 
         // set lexer string
-        void setString(std::string_view string);
+        void setString(std::string_view);
 
         // return Token structure from current index
         const Token next() const;

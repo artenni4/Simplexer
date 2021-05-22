@@ -1,6 +1,6 @@
+#include "../Simplexer.hpp"
 #include <iostream>
 #include <vector>
-#include "../Simplexer.hpp"
 
 void printTokens(const std::vector<Simplexer::Token> ts) {
     for (auto iter = ts.begin(); iter != ts.end(); ++iter) {

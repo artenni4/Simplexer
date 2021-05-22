@@ -2,6 +2,16 @@
 
 namespace Simplexer {
 
+    Lexer::Lexer() { 
+        m_pos = m_rawString.begin();
+    }
+
+    Lexer::Lexer(std::string_view string) : 
+        m_rawString(string) 
+    { 
+        m_pos = m_rawString.begin();
+    }
+
     void Lexer::setString(std::string_view string) {
         m_rawString = string;
         m_pos = m_rawString.begin();
