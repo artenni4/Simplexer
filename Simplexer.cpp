@@ -38,7 +38,7 @@ namespace Simplexer {
         }
     }
 
-    const std::string Lexer::getSymbolLine() const {
+    void Lexer::getSymbolLine(std::string& ln) const {
         std::stringstream res;
         std::size_t row = 0, line = 1; // start line from 1, not from 0
         std::string::const_iterator lastNl = m_rawString.begin(); // last new line
@@ -52,7 +52,7 @@ namespace Simplexer {
         row = m_pos - lastNl + 1; // shift one char to right, so first is 1 but not 0
 
         res << '(' << line << ',' << row << ')';
-        return res.str();
+        ln = res.str();
     }
 
     void Lexer::parseSymbol(Token& tk) const
@@ -221,7 +221,7 @@ namespace Simplexer {
         while (std::isspace(*m_pos)) { ++m_pos; }
 
         // set symbol line
-        tk.line = getSymbolLine();
+        getSymbolLine(tk.line);
 
         if (std::isalpha(*m_pos)) { // symbol
             parseSymbol(tk);

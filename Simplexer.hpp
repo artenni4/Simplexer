@@ -106,7 +106,7 @@ namespace Simplexer {
     private:
 
         // return string with symbol's line and row
-        const std::string getSymbolLine() const;
+        void getSymbolLine(std::string&) const;
 
         // get symbol from current position
         void parseSymbol(Token&) const;
