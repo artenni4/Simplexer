@@ -54,7 +54,7 @@ void fileScanTest() {
     bool err = false;
     std::vector<Simplexer::Token> ts;
 
-    ast::timer<double, std::micro> t;
+    ast::timer<double, std::milli> t;
 
     t.start();
     for (auto t = lex.next(); t.type != Simplexer::TokenType::END_OF_FILE; t = lex.next()) {
@@ -64,7 +64,7 @@ void fileScanTest() {
     t.stop();
 
     printTokens(ts);
-    std::cout << "Parsing took : " << t.getLastDuration() << " microseconds" << std::endl;
+    std::cout << "Parsing took : " << t.getLastDuration() << " milliseconds" << std::endl;
 
     if (err) {
         std::cout << "\n\nSome errors occured during analysis" << std::endl;
@@ -79,6 +79,11 @@ void typeAndSymbolsTest() {
     t = lex.next();
     CHECK_EQUAL(t.type, Simplexer::TokenType::INTEGER, "integer type");
     CHECK_EQUAL(t.symbol, "123", "integer symbol");
+
+    lex.setString("_abc_1");
+    t = lex.next();
+    CHECK_EQUAL(t.type, Simplexer::TokenType::SYMBOL, "symbol with underscore");
+    CHECK_EQUAL(t.symbol, "_abc_1", "symbol with underscore name");
 
     lex.setString("'hello'");
     t = lex.next();
@@ -136,7 +141,7 @@ int main(int argc, char** argv) {
 
     typeAndSymbolsTest();
 
-    fileScanTest();
+    //fileScanTest();
 
     return 0;
 }

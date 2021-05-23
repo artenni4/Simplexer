@@ -59,7 +59,7 @@ namespace Simplexer {
     {
         tk.type = TokenType::SYMBOL;
         // fill in string for token
-        while (std::isalpha(*m_pos) || std::isdigit(*m_pos)) {
+        while (std::isalpha(*m_pos) || std::isdigit(*m_pos) || *m_pos == '_') {
             tk.symbol += *m_pos++;
         }
         --m_pos; // return to the last character
@@ -223,7 +223,7 @@ namespace Simplexer {
         // set symbol line
         getSymbolLine(tk.line);
 
-        if (std::isalpha(*m_pos)) { // symbol
+        if (std::isalpha(*m_pos) || *m_pos == '_') { // symbol if encounted char or underscore
             parseSymbol(tk);
         }
         else if (*m_pos == '\'' || *m_pos == '"') { // string
