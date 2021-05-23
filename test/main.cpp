@@ -1,4 +1,5 @@
 #include "../Simplexer.hpp"
+#include "asttimer.hpp"
 #include <iostream>
 #include <vector>
 
@@ -52,12 +53,18 @@ void fileScanTest() {
 
     bool err = false;
     std::vector<Simplexer::Token> ts;
+
+    ast::timer<double, std::micro> t;
+
+    t.start();
     for (auto t = lex.next(); t.type != Simplexer::TokenType::END_OF_FILE; t = lex.next()) {
         ts.push_back(t);
         if (t.type == Simplexer::TokenType::INVALID) err = true;
     }
+    t.stop();
 
     printTokens(ts);
+    std::cout << "Parsing took : " << t.getLastDuration() << " microseconds" << std::endl;
 
     if (err) {
         std::cout << "\n\nSome errors occured during analysis" << std::endl;
@@ -129,7 +136,7 @@ int main(int argc, char** argv) {
 
     typeAndSymbolsTest();
 
-    //fileScanTest();
+    fileScanTest();
 
     return 0;
 }
