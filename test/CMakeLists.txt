@@ -1,4 +1,4 @@
-add_executable(TestAll main.cpp)
+add_executable(TestAll test_all.cpp)
 add_executable(PrintTokenizedFile test_file.cpp)
 
 
