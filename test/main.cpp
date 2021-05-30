@@ -2,6 +2,7 @@
 #include <sstream>
 #include <vector>
 
+#include "catch.hpp"
 #include "Simplexer.hpp"
 #include "asttimer.hpp"
 

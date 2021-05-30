@@ -124,6 +124,7 @@ namespace Simplexer {
         Lexer(std::string_view);
 
         // read file content
+        // return true on success
         bool readFile(std::string_view);
 
         // set lexer string
@@ -132,6 +133,9 @@ namespace Simplexer {
         // return Token structure from current index
         const Token next() const;
     };
+
+
+    // function definitions
 
     Lexer::Lexer() { 
         m_pos = m_rawString.begin();
