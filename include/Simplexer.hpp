@@ -141,16 +141,16 @@ namespace Simplexer {
         m_pos = m_rawString.begin();
     }
 
-    Lexer::Lexer(std::string_view string) : 
-        m_rawString(string) 
-    { 
-        m_pos = m_rawString.begin();
+    Lexer::Lexer(std::string_view string) 
+    {
+        setString(string);
     }
 
     void Lexer::setString(std::string_view string) {
+        m_rawString.reserve(string.size() + 1); // reserve plus one for EOF
         m_rawString = string;
-        m_pos = m_rawString.begin();
         m_rawString += '\0';
+        m_pos = m_rawString.begin();
     }
 
     bool Lexer::readFile(std::string_view fileName) {

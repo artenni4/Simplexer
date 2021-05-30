@@ -1,151 +1,171 @@
-#include <iostream>
-#include <sstream>
-#include <vector>
-
-#include "catch.hpp"
 #include "Simplexer.hpp"
-#include "asttimer.hpp"
+
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
 
 
-void printTokens(const std::vector<Simplexer::Token> ts) {
-    for (auto iter = ts.begin(); iter != ts.end(); ++iter) {
-        std::stringstream buff;
-
-        // line
-        buff << "Line: " << iter->line;
-        while (buff.str().size() < 15) {
-            buff << ' ';
-        }
-
-        // type
-        buff << " Type: " << Simplexer::PRINTABLE_TYPES[static_cast<int>(iter->type)];
-        while (buff.str().size() < 35) {
-            buff << ' ';
-        }
-        
-        // symbol
-        buff << " Symbol: " << iter->symbol;
-
-        std::cout << buff.str() << std::endl;
-    }
+TEST_CASE("Tokenize integer values", "[integer]") {
+    Simplexer::Lexer lex("123456789");
+    auto t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::INTEGER);
+    REQUIRE(t.symbol == "123456789");
 }
 
-template <class T, class U>
-bool CHECK_EQUAL(const T& expr, const U& eq, std::string_view description = "") {
-    std::cout << "Test " << description << " : ";
-    if (expr != eq) {
-        std::cout << "Failed" << std::endl;
-        return false;
-    }
-    else {
-        std::cout << "OK" << std::endl;
-        return true;
-    }
+TEST_CASE("Tokenize rational values", "[rational]") {
+    Simplexer::Lexer lex("123456789.123456789 .123 123. .");
+    auto t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::RATIONAL);
+    REQUIRE(t.symbol == "123456789.123456789");
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::RATIONAL);
+    REQUIRE(t.symbol == ".123");
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::RATIONAL);
+    REQUIRE(t.symbol == "123.");
+
+    t = lex.next();
+    REQUIRE(t.type != Simplexer::TokenType::RATIONAL);
+    REQUIRE(t.symbol.empty() == true);
 }
 
-void fileScanTest() {
-    const char* fileName = "test.txt";
-    Simplexer::Lexer lex;
+TEST_CASE("Tokenize string", "[string]") {
+    Simplexer::Lexer lex("\"hello\" 'hello' 'hell\\'o'");
+    auto t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::STRING);
+    REQUIRE(t.symbol == "hello");
 
-    if (!lex.readFile(fileName)) {
-        std::cerr << "Failed to read file " << fileName << std::endl;
-        return;
-    }
-    else {
-        std::cout << "File " << fileName << " was successfuly read" << std::endl;
-    }
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::STRING);
+    REQUIRE(t.symbol == "hello");
 
-    bool err = false;
-    std::vector<Simplexer::Token> ts;
-
-    ast::timer<double, std::milli> t;
-
-    t.start();
-    for (auto t = lex.next(); t.type != Simplexer::TokenType::END_OF_FILE; t = lex.next()) {
-        ts.push_back(t);
-        if (t.type == Simplexer::TokenType::INVALID) err = true;
-    }
-    t.stop();
-
-    printTokens(ts);
-    std::cout << "Parsing took : " << t.getLastDuration() << " milliseconds" << std::endl;
-
-    if (err) {
-        std::cout << "\n\nSome errors occured during analysis" << std::endl;
-    }
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::STRING);
+    REQUIRE(t.symbol == "hell'o");
 }
 
-void typeAndSymbolsTest() {
-    Simplexer::Lexer lex;
-    Simplexer::Token t;
-
-    lex.setString("123");
-    t = lex.next();
-    CHECK_EQUAL(t.type, Simplexer::TokenType::INTEGER, "integer type");
-    CHECK_EQUAL(t.symbol, "123", "integer symbol");
-
-    lex.setString("_abc_1");
-    t = lex.next();
-    CHECK_EQUAL(t.type, Simplexer::TokenType::SYMBOL, "symbol with underscore");
-    CHECK_EQUAL(t.symbol, "_abc_1", "symbol with underscore name");
-
-    lex.setString("'hello'");
-    t = lex.next();
-    CHECK_EQUAL(t.type, Simplexer::TokenType::STRING, "string type");
-    CHECK_EQUAL(t.symbol, "hello", "string symbol");
-
-    lex.setString("'abc \\' def\\g'");
-    t = lex.next();
-    CHECK_EQUAL(t.type, Simplexer::TokenType::STRING, "string with back slash");
-    CHECK_EQUAL(t.symbol, "abc ' def\\g", "string with back slash symbol");
-
-    lex.setString("12.355");
-    t = lex.next();
-    CHECK_EQUAL(t.type, Simplexer::TokenType::RATIONAL, "rational type");
-    CHECK_EQUAL(t.symbol, "12.355", "rational symbol");
-
-    lex.setString("+-*/");
-    t = lex.next();
-    CHECK_EQUAL(t.type, Simplexer::TokenType::PLUS, "plus operator");
+TEST_CASE("Tokenize symbols, comments, etc.", "[other]") {
+    Simplexer::Lexer lex("abc //variable");
+    auto t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::SYMBOL);
+    REQUIRE(t.symbol == "abc");
 
     t = lex.next();
-    CHECK_EQUAL(t.type, Simplexer::TokenType::MINUS, "minus operator");
+    REQUIRE(t.type == Simplexer::TokenType::COMMENT);
+    REQUIRE(t.symbol == "variable");
 
     t = lex.next();
-    CHECK_EQUAL(t.type, Simplexer::TokenType::ASTERISK, "asterisk operator");
-
-    t = lex.next();
-    CHECK_EQUAL(t.type, Simplexer::TokenType::SLASH, "slash operator");
-
-    
-    lex.setString("++ += -- -= *= /=");
-    t = lex.next();
-    CHECK_EQUAL(t.type, Simplexer::TokenType::PLUS_PLUS, "plus plus operator");
-
-    t = lex.next();
-    CHECK_EQUAL(t.type, Simplexer::TokenType::PLUS_EQUAL, "plus equal operator");
-
-    t = lex.next();
-    CHECK_EQUAL(t.type, Simplexer::TokenType::MINUS_MINUS, "minus minus operator");
-
-    t = lex.next();
-    CHECK_EQUAL(t.type, Simplexer::TokenType::MINUS_EQUAL, "minus equal operator");
-
-    t = lex.next();
-    CHECK_EQUAL(t.type, Simplexer::TokenType::ASTERISK_EQUAL, "asterisk equal operator");
-
-    t = lex.next();
-    CHECK_EQUAL(t.type, Simplexer::TokenType::SLASH_EQUAL, "slash equal operator");
-
-
-    // TODO other cases
+    REQUIRE(t.type == Simplexer::TokenType::END_OF_FILE);
+    REQUIRE(t.symbol.empty() == true);
 }
 
-int main(int argc, char** argv) {
+TEST_CASE("Tokenize operators", "[operator]") {
+    Simplexer::Lexer lex("+ ++ += - -- -= * *= / /= < <= > >= = ==");
+    auto t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::PLUS);
+    REQUIRE(t.symbol.empty() == true);
 
-    typeAndSymbolsTest();
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::PLUS_PLUS);
+    REQUIRE(t.symbol.empty() == true);
 
-    //fileScanTest();
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::PLUS_EQUAL);
+    REQUIRE(t.symbol.empty() == true);
 
-    return 0;
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::MINUS);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::MINUS_MINUS);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::MINUS_EQUAL);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::ASTERISK);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::ASTERISK_EQUAL);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::SLASH);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::SLASH_EQUAL);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::LESS_THAN);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::LESS_OR_EQUAL);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::GREATER_THAN);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::GREATER_OR_EQUAL);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::EQUAL);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::DOUBLE_EQUAL);
+    REQUIRE(t.symbol.empty() == true);
+}
+
+TEST_CASE("Tokenize separators", "[separator]") {
+    Simplexer::Lexer lex(", . : ; ( ) { } [ ]");
+    auto t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::COMMA);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::POINT);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::COLON);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::SEMICOLON);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::LEFT_PARAN);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::RIGHT_PARAN);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::LEFT_CURLY);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::RIGHT_CURLY);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::LEFT_SQUARE);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::RIGHT_SQUARE);
+    REQUIRE(t.symbol.empty() == true);
 }
