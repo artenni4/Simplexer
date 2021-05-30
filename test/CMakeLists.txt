@@ -1,5 +1,5 @@
 set(BINARY ${CMAKE_PROJECT_NAME}_test)
-set(SOURCES main.cpp asttimer.hpp)
+set(SOURCES main.cpp)
 
 
 add_executable(${BINARY} ${SOURCES})
