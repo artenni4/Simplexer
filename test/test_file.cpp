@@ -5,12 +5,18 @@
 #include "Simplexer.hpp"
 
 
+std::string getTokenLine(const Simplexer::Token& tk) {
+    std::stringstream ss;
+    ss << '(' << tk.symbolLine << ':' << tk.symbolRow << ')';
+    return ss.str();
+}
+
 void printTokens(const std::vector<Simplexer::Token>& ts) {
     for (auto iter = ts.begin(); iter != ts.end(); ++iter) {
         std::stringstream buff;
 
         // line
-        buff << "Line: " << iter->line;
+        buff << "Line: " << getTokenLine(*iter);
         while (buff.str().size() < 15) {
             buff << ' ';
         }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <sstream>
 #include <fstream>
 #include <cctype>
 #include <iterator>
@@ -93,8 +92,9 @@ namespace Simplexer {
     // Holds everything needed for token
     struct Token {
         TokenType type = TokenType::INVALID;
-        std::string line;
         std::string symbol;
+        std::size_t symbolRow;
+        std::size_t symbolLine;
     };
 
     // Class that represents lexical analyzer
@@ -106,7 +106,7 @@ namespace Simplexer {
     private:
 
         // return string with symbol's line and row
-        void getSymbolLine(std::string&) const;
+        void getSymbolLine(Token&) const;
 
         // get symbol from current position
         void parseSymbol(Token&) const;
@@ -173,8 +173,7 @@ namespace Simplexer {
         }
     }
 
-    void Lexer::getSymbolLine(std::string& ln) const {
-        std::stringstream res;
+    void Lexer::getSymbolLine(Token& tk) const {
         std::size_t row = 0, line = 1; // start line from 1, not from 0
         std::string::const_iterator lastNl = m_rawString.begin(); // last new line
 
@@ -186,8 +185,8 @@ namespace Simplexer {
         }
         row = m_pos - lastNl + 1; // shift one char to right, so first is 1 but not 0
 
-        res << '(' << line << ',' << row << ')';
-        ln = res.str();
+        tk.symbolLine = line;
+        tk.symbolRow = row;
     }
 
     void Lexer::parseSymbol(Token& tk) const
@@ -356,7 +355,7 @@ namespace Simplexer {
         while (std::isspace(*m_pos)) { ++m_pos; }
 
         // set symbol line
-        getSymbolLine(tk.line);
+        getSymbolLine(tk);
 
         if (std::isalpha(*m_pos) || *m_pos == '_') { // symbol if encounted char or underscore
             parseSymbol(tk);
