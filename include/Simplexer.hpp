@@ -332,7 +332,7 @@ namespace Simplexer {
         }
 
         // return Token structure from current index
-        Token Lexer::next() const {
+        Token& Lexer::next() const {
 
             // skip spaces
             while (std::isspace(*m_pos)) { ++m_pos; }
