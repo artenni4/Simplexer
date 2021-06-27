@@ -6,14 +6,14 @@
 
 TEST_CASE("Tokenize integer values", "[integer]") {
     Simplexer::Lexer lex("123456789");
-    auto t = lex.next();
+    Simplexer::Token t = lex.next();
     REQUIRE(t.type == Simplexer::TokenType::INTEGER);
     REQUIRE(t.symbol == "123456789");
 }
 
 TEST_CASE("Tokenize rational values", "[rational]") {
     Simplexer::Lexer lex("123456789.123456789 .123 123. .");
-    auto t = lex.next();
+    Simplexer::Token t = lex.next();
     REQUIRE(t.type == Simplexer::TokenType::RATIONAL);
     REQUIRE(t.symbol == "123456789.123456789");
 
@@ -32,7 +32,7 @@ TEST_CASE("Tokenize rational values", "[rational]") {
 
 TEST_CASE("Tokenize string", "[string]") {
     Simplexer::Lexer lex("\"hello\" 'hello' 'hell\\'o'");
-    auto t = lex.next();
+    Simplexer::Token t = lex.next();
     REQUIRE(t.type == Simplexer::TokenType::STRING);
     REQUIRE(t.symbol == "hello");
 
@@ -47,7 +47,7 @@ TEST_CASE("Tokenize string", "[string]") {
 
 TEST_CASE("Tokenize symbols, comments, etc.", "[other]") {
     Simplexer::Lexer lex("abc //variable");
-    auto t = lex.next();
+    Simplexer::Token t = lex.next();
     REQUIRE(t.type == Simplexer::TokenType::SYMBOL);
     REQUIRE(t.symbol == "abc");
 
@@ -60,9 +60,9 @@ TEST_CASE("Tokenize symbols, comments, etc.", "[other]") {
     REQUIRE(t.symbol.empty() == true);
 }
 
-TEST_CASE("Tokenize operators", "[operator]") {
-    Simplexer::Lexer lex("+ ++ += - -- -= * *= / /= < <= > >= = ==");
-    auto t = lex.next();
+TEST_CASE("Tokenize binary operators", "[binary operator]") {
+    Simplexer::Lexer lex("+ ++ += - -- -= * *= / /= < <= > >= ! = == !=");
+    Simplexer::Token t = lex.next();
     REQUIRE(t.type == Simplexer::TokenType::PLUS);
     REQUIRE(t.symbol.empty() == true);
 
@@ -119,17 +119,48 @@ TEST_CASE("Tokenize operators", "[operator]") {
     REQUIRE(t.symbol.empty() == true);
 
     t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::NOT);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
     REQUIRE(t.type == Simplexer::TokenType::EQUAL);
     REQUIRE(t.symbol.empty() == true);
 
     t = lex.next();
     REQUIRE(t.type == Simplexer::TokenType::DOUBLE_EQUAL);
     REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::NOT_EQUAL);
+    REQUIRE(t.symbol.empty() == true);
+}
+
+TEST_CASE("Tokenize terminals", "[terminal]") {
+    Simplexer::Lexer lex("function return if elif else");
+    Simplexer::Token t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::FUNCTION);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::RETURN);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::IF);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::ELIF);
+    REQUIRE(t.symbol.empty() == true);
+
+    t = lex.next();
+    REQUIRE(t.type == Simplexer::TokenType::ELSE);
+    REQUIRE(t.symbol.empty() == true);
 }
 
 TEST_CASE("Tokenize separators", "[separator]") {
     Simplexer::Lexer lex(", . : ; ( ) { } [ ]");
-    auto t = lex.next();
+    Simplexer::Token t = lex.next();
     REQUIRE(t.type == Simplexer::TokenType::COMMA);
     REQUIRE(t.symbol.empty() == true);
 

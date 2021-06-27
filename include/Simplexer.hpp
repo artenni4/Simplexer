@@ -29,8 +29,10 @@ namespace Simplexer {
         ASTERISK_EQUAL,
         SLASH,
         SLASH_EQUAL,
+        NOT,
         EQUAL,
         DOUBLE_EQUAL,
+        NOT_EQUAL,
         LESS_THAN,
         LESS_OR_EQUAL,
         GREATER_THAN,
@@ -47,7 +49,14 @@ namespace Simplexer {
         RIGHT_SQUARE,
         LEFT_CURLY,
         RIGHT_CURLY,
-        // === end of separatos ==
+        // ==== end of separatos ==
+        // ====== terminals =======
+        FUNCTION,
+        RETURN,
+        IF,
+        ELIF,
+        ELSE,
+        // === end of terminals ===
     };
 
     // use for printing enum values
@@ -70,8 +79,10 @@ namespace Simplexer {
         "ASTERISK_EQUAL",
         "SLASH",
         "SLASH_EQUAL",
+        "NOT",
         "EQUAL",
         "DOUBLE_EQUAL",
+        "NOT_EQUAL",
         "LESS_THAN",
         "LESS_OR_EQUAL",
         "GREATER_THAN",
@@ -86,6 +97,11 @@ namespace Simplexer {
         "RIGHT_SQUARE",
         "LEFT_CURLY",
         "RIGHT_CURLY",
+        "FUNCTION",
+        "RETURN",
+        "IF",
+        "ELIF",
+        "ELSE"
     };
 
     // Token class
@@ -127,11 +143,33 @@ namespace Simplexer {
         void Lexer::parseSymbol() const
         {
             m_currToken.type = TokenType::SYMBOL;
+            std::string result;
             // fill in string for token
             while (std::isalpha(*m_pos) || std::isdigit(*m_pos) || *m_pos == '_') {
-                m_currToken.symbol += *m_pos++;
+                result += *m_pos++;
             }
             --m_pos; // return to the last character
+
+            // check if symbol is some terminal
+            if (result == "function") {
+                m_currToken.type = Simplexer::TokenType::FUNCTION;
+            }
+            else if (result == "return") {
+                m_currToken.type = Simplexer::TokenType::RETURN;
+            }
+            else if (result  == "if") {
+                m_currToken.type = Simplexer::TokenType::IF;
+            }
+            else if (result == "elif") {
+                m_currToken.type = Simplexer::TokenType::ELIF;
+            }
+            else if (result == "else") {
+                m_currToken.type = Simplexer::TokenType::ELSE;
+            }
+            else {
+                m_currToken.type = Simplexer::TokenType::SYMBOL;
+                m_currToken.symbol = result;
+            }
         }
         // get number from current position
         void Lexer::parseNumber() const
@@ -265,6 +303,14 @@ namespace Simplexer {
                     m_currToken.type = TokenType::GREATER_THAN;
                 }
                 break;
+            case '!':
+                if (*next == '=') {
+                    m_currToken.type = TokenType::NOT_EQUAL;
+                    ++m_pos;
+                }
+                else {
+                    m_currToken.type = TokenType::NOT;
+                }
             }
 
         }
@@ -339,7 +385,8 @@ namespace Simplexer {
 
             // set symbol line
             getSymbolLine();
-
+            
+            m_currToken.symbol.clear(); // clear raw text in token
             if (std::isalpha(*m_pos) || *m_pos == '_') { // symbol if encounted char or underscore
                 parseSymbol();
             }
@@ -374,6 +421,7 @@ namespace Simplexer {
                 case '=':
                 case '<':
                 case '>':
+                case '!':
                     parseOperator();
                     break;
                 case ',': m_currToken.type = TokenType::COMMA; break;
